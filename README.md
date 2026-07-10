@@ -13,11 +13,13 @@
 
 ```
 .
-├── us-govee-部分退款发票更新-PRD-v0.2.md   # PRD 源文件（内容版本 v0.5）
+├── 日常需求/                               # 日常 PRD 文档（本地 HTML）
+│   ├── index.html                          # 文档入口
+│   ├── us-govee-部分退款发票更新-PRD-v0.2.md
+│   └── us-govee-部分退款发票更新-PRD.html
 ├── assets/
-│   ├── export-prd-html.py                  # Markdown → HTML 导出脚本
-│   └── us-govee-部分退款发票更新-PRD-展示页.html
-└── docs/                                   # GitHub Pages 发布目录
+│   └── export-prd-html.py                  # Markdown → HTML 导出脚本
+└── docs/                                   # GitHub Pages 发布目录（同步输出）
     ├── index.html
     └── us-govee-部分退款发票更新-PRD.html
 ```
@@ -30,11 +32,11 @@
 python3 assets/export-prd-html.py
 ```
 
-脚本会读取 `us-govee-部分退款发票更新-PRD-v0.2.md`，生成：
+脚本会读取 `日常需求/us-govee-部分退款发票更新-PRD-v0.2.md`，生成：
 
-- `assets/us-govee-部分退款发票更新-PRD-展示页.html`
-- `docs/us-govee-部分退款发票更新-PRD.html`
-- `docs/index.html`
+- `日常需求/us-govee-部分退款发票更新-PRD.html`
+- `日常需求/index.html`
+- `docs/us-govee-部分退款发票更新-PRD.html`（GitHub Pages 同步）
 
 ## PRD 概要
 

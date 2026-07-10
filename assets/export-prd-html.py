@@ -8,8 +8,11 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-MD_FILE = ROOT / "us-govee-部分退款发票更新-PRD-v0.2.md"
-ASSETS_OUT = ROOT / "assets" / "us-govee-部分退款发票更新-PRD-展示页.html"
+REQ_DIR = ROOT / "日常需求"
+MD_FILE = REQ_DIR / "us-govee-部分退款发票更新-PRD-v0.2.md"
+HTML_OUT = REQ_DIR / "us-govee-部分退款发票更新-PRD.html"
+INDEX_OUT = REQ_DIR / "index.html"
+# GitHub Pages 兼容输出（可选）
 DOCS_PRD_OUT = ROOT / "docs" / "us-govee-部分退款发票更新-PRD.html"
 DOCS_INDEX_OUT = ROOT / "docs" / "index.html"
 
@@ -122,7 +125,7 @@ DOCS_INDEX_TEMPLATE = """<!DOCTYPE html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Govee US 文档</title>
+  <title>Govee 日常需求文档</title>
   <style>
     body {
       font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -139,8 +142,8 @@ DOCS_INDEX_TEMPLATE = """<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <h1>Govee US 项目文档</h1>
-  <p class="meta">GitHub Pages · mashulin05/govee-Risk-control-system</p>
+  <h1>Govee 日常需求</h1>
+  <p class="meta">govee/日常需求</p>
   <h2>产品需求文档</h2>
   <ul>
     <li><a href="us-govee-部分退款发票更新-PRD.html">us.govee.com 部分退款发票更新 PRD v0.5</a></li>
@@ -168,14 +171,16 @@ def write_outputs() -> None:
     md_text = read_markdown()
     prd_html = build_prd_html(md_text)
 
-    ASSETS_OUT.parent.mkdir(parents=True, exist_ok=True)
+    REQ_DIR.mkdir(parents=True, exist_ok=True)
     DOCS_PRD_OUT.parent.mkdir(parents=True, exist_ok=True)
 
-    ASSETS_OUT.write_text(prd_html, encoding="utf-8")
+    HTML_OUT.write_text(prd_html, encoding="utf-8")
+    INDEX_OUT.write_text(DOCS_INDEX_TEMPLATE, encoding="utf-8")
     DOCS_PRD_OUT.write_text(prd_html, encoding="utf-8")
     DOCS_INDEX_OUT.write_text(DOCS_INDEX_TEMPLATE, encoding="utf-8")
 
-    print(f"Wrote {ASSETS_OUT}")
+    print(f"Wrote {HTML_OUT}")
+    print(f"Wrote {INDEX_OUT}")
     print(f"Wrote {DOCS_PRD_OUT}")
     print(f"Wrote {DOCS_INDEX_OUT}")
 
