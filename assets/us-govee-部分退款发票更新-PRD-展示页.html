@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>us.govee.com 部分退款发票更新 PRD v0.5</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1a2332;
+      --muted: #5c6b7a;
+      --border: #e2e8f0;
+      --accent: #2563eb;
+      --code-bg: #f1f5f9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .page-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: #e2e8f0;
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .page-header h1 { margin: 0 0 8px; font-size: 1.6rem; font-weight: 700; }
+    .page-header p { margin: 0; color: #94a3b8; font-size: 0.95rem; }
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .markdown-body {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px 48px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .markdown-body h1 { font-size: 1.75rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4em; margin-top: 0; }
+    .markdown-body h2 { font-size: 1.35rem; margin-top: 2em; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; }
+    .markdown-body h3 { font-size: 1.1rem; margin-top: 1.5em; }
+    .markdown-body table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.92rem; }
+    .markdown-body th, .markdown-body td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+    .markdown-body th { background: var(--code-bg); font-weight: 600; }
+    .markdown-body code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; }
+    .markdown-body pre { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; }
+    .markdown-body pre code { background: none; padding: 0; color: inherit; }
+    .markdown-body blockquote { border-left: 4px solid var(--accent); margin: 1em 0; padding: 0.5em 1em; background: #eff6ff; color: var(--muted); }
+    .markdown-body hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
+    .mermaid { margin: 1.5em 0; text-align: center; }
+    .footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 24px; }
+    @media (max-width: 640px) {
+      .markdown-body { padding: 24px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>us.govee.com 部分退款发票更新 PRD</h1>
+    <p>v0.5 · ERP 驱动退款流程 · 美国站不含税定价</p>
+  </header>
+  <main class="container">
+    <article id="content" class="markdown-body"></article>
+    <p class="footer">Generated from <a href="us-govee-部分退款发票更新-PRD-v0.2.md">us-govee-部分退款发票更新-PRD-v0.2.md</a></p>
+  </main>
+  <script>
+    const rawMd = "# us.govee.com 部分退款发票更新 PRD\n\n| 属性 | 内容 |\n|------|------|\n| **文档版本** | v0.5 |\n| **文件名** | us-govee-部分退款发票更新-PRD-v0.2.md |\n| **站点范围** | 仅美国站（us.govee.com） |\n| **定价模式** | 不含税定价（Tax-exclusive） |\n| **状态** | 评审中 |\n| **最后更新** | 2026-07-10 |\n\n---\n\n## 1. 背景与问题\n\n### 1.1 业务背景\n\n美国站订单在发生**部分退款**后，用户仍可能通过订单详情页手动触发发票下载。当前发票逻辑未区分「全额订单」与「部分退款订单」，导致：\n\n- 发票金额与实付/实退不一致，引发客服咨询与合规风险；\n- 退款信息未在发票上结构化展示，用户无法核对退款明细；\n- ERP 与 Shopify 退款链路割裂，运营在 ERP 录入退款后，发票侧无法自动感知 SKU 级退款记录。\n\n### 1.2 目标用户\n\n| 角色 | 诉求 |\n|------|------|\n| **美国站消费者** | 下载与当前订单状态一致的发票，清晰看到退款金额与税费 |\n| **ERP 运营** | 在 ERP 录入退款金额，系统自动算税并触发 Shopify 退款，留下 SKU 级记录 |\n| **客服 / 财务** | 发票字段可追溯、可审计，减少手工解释成本 |\n\n### 1.3 核心目标\n\n1. **ERP 驱动退款**：运营在 ERP 输入退款金额 → 自动计算税额 → 触发 Shopify 退款 → 落库 SKU 级退款记录。\n2. **发票手动触发、数据准确**：用户手动下载发票时，展示完整行项目 + 退款区块，合计公式符合美国不含税定价习惯。\n3. **仅美国站**：其他区域站点不在本期范围。\n\n---\n\n## 2. 范围定义\n\n### 2.1 In Scope\n\n- us.govee.com 订单的部分退款场景（含多次部分退款累计）\n- ERP → 税务计算 → Shopify Refund API → 内部退款台账（SKU 级）\n- 发票 PDF/HTML 生成：行项目、Payment Details、税费与合计\n- 发票下载入口：订单详情页手动触发（与现网一致）\n\n### 2.2 Out of Scope\n\n- 非美国站（eu.govee.com、uk.govee.com 等）\n- 全额退款后订单关闭场景的发票策略变更（沿用现网）\n- 含税定价（Tax-inclusive）站点\n- 自动邮件推送退款发票（本期仍为用户主动下载）\n\n---\n\n## 3. 术语表\n\n| 术语 | 说明 |\n|------|------|\n| **Tax-exclusive** | 商品标价不含税；税费在结账时按地址计算并叠加 |\n| **部分退款** | 订单未全额退款，仍保留部分商品或金额 |\n| **退款含税金额** | 退还给用户的金额 = 退款商品小计（不含税）+ 对应退还税额 |\n| **SKU 级记录** | 每次退款在系统内按 SKU/行项目维度记录数量与金额 |\n| **手动触发发票** | 用户在订单详情点击「Download Invoice」，非系统自动发送 |\n\n---\n\n## 4. 系统架构\n\n### 4.1 架构总览\n\n```mermaid\nflowchart TB\n    subgraph ERP[\"ERP 运营后台\"]\n        OP[运营录入退款金额]\n        TAX[自动税额计算]\n        SKU[SKU 级退款记录]\n    end\n\n    subgraph Shopify[\"Shopify US Store\"]\n        ORD[Order / Line Items]\n        REF[Refund API]\n    end\n\n    subgraph Backend[\"Govee 订单中台\"]\n        LEDGER[退款台账]\n        INV[发票服务]\n    end\n\n    subgraph User[\"用户\"]\n        DL[订单详情 · 下载发票]\n    end\n\n    OP --> TAX\n    TAX --> REF\n    TAX --> SKU\n    REF --> ORD\n    SKU --> LEDGER\n    ORD --> LEDGER\n    DL --> INV\n    LEDGER --> INV\n    INV --> DL\n```\n\n### 4.2 数据流原则\n\n- **退款真相源**：ERP 发起 → Shopify 执行 → 中台台账同步；发票只读台账与订单快照。\n- **发票生成时机**：用户点击下载时实时组装（或读取已生成缓存），必须反映截至下载时刻的累计退款。\n- **税费**：退款税额由 ERP 算税服务按原订单税率/规则计算，不重新按当前地址计税。\n\n---\n\n## 5. 业务流程\n\n### 5.1 ERP 部分退款流程\n\n```mermaid\nsequenceDiagram\n    actor Op as ERP 运营\n    participant ERP as ERP\n    participant Tax as 税务计算\n    participant SF as Shopify\n    participant DB as 退款台账\n\n    Op->>ERP: 选择订单，输入退款金额（可按 SKU）\n    ERP->>Tax: 请求计算退还税额\n    Tax-->>ERP: 返回 不含税退款 + 退税额\n    ERP->>SF: 调用 Refund API（金额 = 含税退款总额）\n    SF-->>ERP: 退款成功 / 失败\n    ERP->>DB: 写入 SKU 级退款记录\n    ERP-->>Op: 展示退款结果\n```\n\n### 5.2 用户下载发票流程\n\n```mermaid\nsequenceDiagram\n    actor User as 用户\n    participant Web as us.govee.com\n    participant Inv as 发票服务\n    participant DB as 订单+退款台账\n\n    User->>Web: 订单详情 · Download Invoice\n    Web->>Inv: 请求生成发票（order_id）\n    Inv->>DB: 读取订单行项目、税费、累计退款\n    DB-->>Inv: 原始订单 + SKU 退款明细\n    Inv->>Inv: 组装行项目 / Payment Details / 合计\n    Inv-->>Web: PDF 或 HTML\n    Web-->>User: 下载发票\n```\n\n---\n\n## 6. 功能需求 — ERP 退款\n\n### REQ-ERP-001 退款金额录入\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | ERP 运营可选择美国站订单，按订单行（SKU）或指定金额发起部分退款 |\n| **输入** | 退款数量/金额（不含税基准或系统约定口径）、退款原因（可选） |\n| **校验** | 累计退款不得超过订单可退上限；币种与订单一致（USD） |\n| **优先级** | P0 |\n\n### REQ-ERP-002 自动税额计算\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | 录入退款金额后，系统按原订单计税规则自动计算应退税额 |\n| **输出** | `refund_subtotal_ex_tax`、`refund_tax`、`refund_total_incl_tax` |\n| **规则** | 与下单时税率一致；多税率行项目按行分别计算后汇总 |\n| **优先级** | P0 |\n\n### REQ-ERP-003 触发 Shopify 退款并落库\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | 算税完成后调用 Shopify Refund API，成功后写入 SKU 级退款记录 |\n| **SKU 记录** | 订单号、SKU、行 ID、退款数量、不含税金额、税额、含税总额、退款时间、Shopify refund_id |\n| **失败处理** | Shopify 失败则不写台账或标记失败，支持重试；不得出现台账已记但 Shopify 未退 |\n| **优先级** | P0 |\n\n---\n\n## 7. 功能需求 — 发票展示\n\n### 7.1 发票结构说明\n\n发票在**部分退款**后仍展示**完整原始行项目**（不因退款隐藏商品行），并在独立区域展示退款与支付明细。\n\n**合计公式（美国站 · 不含税定价）：**\n\n```\nTotal = Subtotal + Total tax + Shipping − Refunded\n```\n\n其中：\n\n- **Subtotal**：原始订单商品小计（不含税），不随部分退款减少。\n- **Total tax**：原始订单税额合计，**保持为下单时税额**，不随部分退款减少。\n- **Shipping**：原始运费（不含税；若有运费税另按现网规则）。\n- **Refunded**：累计已退金额（**含税**，即退给用户的钱）。\n\n### 7.2 发票区块示意\n\n```\n┌─────────────────────────────────────────┐\n│ Line Items（完整原始行项目）              │\n│  SKU A   qty 2   $100.00                │\n│  SKU B   qty 1   $50.00                 │\n├─────────────────────────────────────────┤\n│ Subtotal                    $150.00     │\n│ Total tax                    $12.00     │\n│ Shipping                     $5.00     │\n│ Refunded (incl. tax)        −$55.00     │  ← 累计退款（含税）\n├─────────────────────────────────────────┤\n│ Total                      $112.00     │  ← 150+12+5−55\n├─────────────────────────────────────────┤\n│ Payment Details                         │\n│   Paid (original)            $167.00     │\n│   Refunded                  −$55.00     │\n│   Net paid                  $112.00     │\n└─────────────────────────────────────────┘\n```\n\n### REQ-INV-001 手动触发\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | 发票仅通过订单详情「Download Invoice」手动触发，不自动推送 |\n| **权限** | 仅订单所属用户或客服授权场景可下载 |\n| **优先级** | P0 |\n\n### REQ-INV-002 完整行项目\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | 展示订单全部原始行项目：SKU 名称、数量、单价（不含税）、行小计 |\n| **规则** | 部分退款后仍展示全部行，不在行内删减数量 |\n| **优先级** | P0 |\n\n### REQ-INV-003 Refunded（incl. tax）汇总行\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | 在合计区展示 `Refunded (incl. tax)`，金额为累计退款含税总额 |\n| **展示** | 负数或带 − 前缀；多次部分退款合并为一行累计值 |\n| **优先级** | P0 |\n\n### REQ-INV-004 Total tax 保持原订单税额\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | `Total tax` 始终等于原始订单税额，不扣减退款对应税额 |\n| **原因** | 与不含税 Subtotal 配合，通过 Refunded 行体现资金变动，避免用户误解商品计税基础变化 |\n| **优先级** | P0 |\n\n### REQ-INV-005 合计公式\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | `Total = Subtotal + Total tax + Shipping − Refunded` |\n| **精度** | 金额保留两位小数，四舍五入；币种 USD |\n| **优先级** | P0 |\n\n### REQ-INV-006 Payment Details · Refunded 行\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | Payment Details 区块包含：`Paid (original)`、`Refunded`、`Net paid` |\n| **Refunded** | 与合计区 Refunded (incl. tax) 金额一致 |\n| **Net paid** | 原始实付 − 累计退款 |\n| **优先级** | P0 |\n\n### REQ-INV-007 多次部分退款\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | 同一订单多次部分退款时，发票展示累计退款，无需逐笔列出（明细以 ERP/客服为准） |\n| **数据** | 发票服务读取台账 SUM(refund_total_incl_tax) |\n| **优先级** | P1 |\n\n### REQ-INV-008 无退款订单\n\n| 字段 | 要求 |\n|------|------|\n| **描述** | 未发生退款的订单，发票不展示 Refunded 行，Total 公式退化为 Subtotal + Total tax + Shipping |\n| **兼容性** | 与现网美国站发票版式兼容 |\n| **优先级** | P0 |\n\n---\n\n## 8. 数据模型（摘要）\n\n### 8.1 退款台账 `order_refund_line`\n\n| 字段 | 类型 | 说明 |\n|------|------|------|\n| id | bigint | 主键 |\n| order_id | string | 订单号 |\n| shopify_refund_id | string | Shopify 退款 ID |\n| line_item_id | string | 行项目 ID |\n| sku | string | SKU |\n| quantity | int | 退款数量 |\n| amount_ex_tax | decimal | 不含税退款额 |\n| tax_amount | decimal | 退税额 |\n| amount_incl_tax | decimal | 含税退款额 |\n| created_at | datetime | 创建时间 |\n\n### 8.2 发票快照（可选缓存）\n\n生成发票时可缓存：`order_id`、`generated_at`、`refunded_total`、`pdf_url`，便于审计；非必须落库。\n\n---\n\n## 9. 非功能需求\n\n| 编号 | 类别 | 要求 |\n|------|------|------|\n| NFR-001 | 性能 | 发票生成 P95 < 3s |\n| NFR-002 | 一致性 | 发票 Refunded 金额与 Shopify 退款总额一致（允许 ±$0.01 舍入） |\n| NFR-003 | 审计 | ERP 退款操作留痕：操作人、时间、前后金额 |\n| NFR-004 | 安全 | 发票下载需登录且校验订单归属 |\n| NFR-005 | 兼容 | 不影响未退款订单发票；美国站以外不加载新模板 |\n\n---\n\n## 10. 验收标准\n\n| 编号 | 场景 | 预期结果 |\n|------|------|----------|\n| AC-001 | ERP 录入部分退款 $50+税 | Shopify 退款成功，台账有 SKU 记录 |\n| AC-002 | 用户下载部分退款订单发票 | 行项目完整，有 Refunded (incl. tax) |\n| AC-003 | 检查 Total tax | 等于原订单税额，未减少 |\n| AC-004 | 检查 Total | 等于 Subtotal + Total tax + Shipping − Refunded |\n| AC-005 | Payment Details | 含 Refunded 行，Net paid 正确 |\n| AC-006 | 两次部分退款后下载 | Refunded 为两次含税之和 |\n| AC-007 | 无退款订单 | 无 Refunded 行，版式与现网一致 |\n\n---\n\n## 11. 风险与依赖\n\n| 风险 / 依赖 | 说明 | 缓解 |\n|-------------|------|------|\n| Shopify API 限流 | 大促批量退款 | 队列重试 + 监控 |\n| 税率历史 | 下单后税率规则变更 | 以订单快照税率为准 |\n| 舍入误差 | 行级退税汇总与 Shopify 差 1 分 | 最后一行吸收误差 |\n| ERP 联调 | 依赖 ERP 排期 | 先 Mock 台账联调发票 |\n\n---\n\n## 12. 里程碑（建议）\n\n| 阶段 | 内容 | 产出 |\n|------|------|------|\n| M1 | ERP 算税 + Shopify 退款 + 台账 | REQ-ERP-001~003 |\n| M2 | 发票模板与合计逻辑 | REQ-INV-001~008 |\n| M3 | 联调 + UAT | 验收用例通过 |\n| M4 | 美国站灰度 → 全量 | 监控与客服话术 |\n\n---\n\n## 13. 开放问题\n\n| # | 问题 | 负责人 | 状态 |\n|---|------|--------|------|\n| Q1 | 运费部分退款是否在 ERP 单独录入？ | 运营 | 待定 |\n| Q2 | 发票是否展示每次退款日期明细？ | 产品 | 本期否，仅累计 |\n| Q3 | B2B 免税订单退税是否为 0？ | 税务 | 确认中 |\n\n---\n\n## 14. 修订记录\n\n| 版本 | 日期 | 作者 | 变更说明 |\n|------|------|------|----------|\n| v0.1 | 2026-07-08 | 产品 | 初稿：部分退款发票问题梳理 |\n| v0.2 | 2026-07-09 | 产品 | 明确不含税定价与合计公式 |\n| v0.3 | 2026-07-09 | 产品 | 增加 Payment Details 结构 |\n| v0.4 | 2026-07-10 | 产品 | ERP 驱动退款流程与 SKU 台账 |\n| v0.5 | 2026-07-10 | 产品 | 定稿 REQ-ERP/INV 编号、架构与时序图、验收标准 |\n\n---\n\n## 附录 A：计算示例\n\n**原始订单**\n\n- SKU A ×2：$100.00（不含税）\n- SKU B ×1：$50.00（不含税）\n- Subtotal：$150.00\n- Total tax（8%）：$12.00\n- Shipping：$5.00\n- **原始实付**：$167.00\n\n**部分退款**（退 SKU A 1 件 + 对应税）\n\n- 不含税退款：$50.00\n- 退税：$4.00\n- **Refunded (incl. tax)**：$54.00\n\n**发票合计**\n\n- Total = 150 + 12 + 5 − 54 = **$113.00**\n- Payment Details：Paid $167.00，Refunded −$54.00，Net paid $113.00\n\n---\n\n## 附录 B：相关链接\n\n- 美国站订单详情（发票入口）\n- Shopify Refund API 文档\n- ERP 退款操作手册（待补充）\n";
+    mermaid.initialize({ startOnLoad: false, theme: "default", securityLevel: "loose" });
+
+    const renderer = new marked.Renderer();
+    renderer.code = function(code, infostring) {
+      const lang = (infostring || "").trim().toLowerCase();
+      if (lang === "mermaid") {
+        return '<div class="mermaid">' + code + "</div>";
+      }
+      const escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      return "<pre><code>" + escaped + "</code></pre>";
+    };
+
+    marked.setOptions({ renderer: renderer, gfm: true, breaks: false });
+    document.getElementById("content").innerHTML = marked.parse(rawMd);
+
+    document.querySelectorAll(".mermaid").forEach(function(el, i) {
+      const src = el.textContent;
+      const id = "mermaid-" + i;
+      mermaid.render(id, src).then(function(result) {
+        el.innerHTML = result.svg;
+      }).catch(function(err) {
+        el.innerHTML = "<pre>Mermaid error: " + err.message + "</pre>";
+      });
+    });
+  </script>
+</body>
+</html>
