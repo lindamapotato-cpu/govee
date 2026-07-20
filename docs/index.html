@@ -3,28 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Govee US 文档</title>
+  <title>Govee 项目文档</title>
   <style>
+    :root {
+      --text: #1a2332;
+      --muted: #64748b;
+      --accent: #2563eb;
+      --border: #e2e8f0;
+      --card: #f8fafc;
+    }
     body {
       font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
-      max-width: 720px;
+      max-width: 760px;
       margin: 48px auto;
-      padding: 0 24px;
+      padding: 0 24px 64px;
       line-height: 1.6;
-      color: #1a2332;
+      color: var(--text);
     }
-    h1 { font-size: 1.5rem; }
+    h1 { font-size: 1.6rem; margin-bottom: 8px; }
+    h2 { font-size: 1.1rem; margin-top: 32px; margin-bottom: 12px; color: #334155; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
     ul { padding-left: 1.2em; }
-    a { color: #2563eb; }
-    .meta { color: #64748b; font-size: 0.9rem; }
+    li { margin: 10px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 12px;
+    }
   </style>
 </head>
 <body>
-  <h1>Govee US 项目文档</h1>
-  <p class="meta">GitHub Pages · mashulin05/govee-Risk-control-system</p>
-  <h2>产品需求文档</h2>
-  <ul>
-    <li><a href="us-govee-部分退款发票更新-PRD.html">us.govee.com 部分退款发票更新 PRD v0.5</a></li>
-  </ul>
+  <h1>Govee 项目文档</h1>
+  <p class="meta">GitHub Pages · <a href="https://github.com/lindamapotato-cpu/govee">lindamapotato-cpu/govee</a></p>
+
+  <h2>Adyen 卡支付 · 一键复购</h2>
+  <div class="card">
+    <ul>
+      <li>
+        <a href="Adyen-NTO卡支付一键复购-PRD.html">Adyen 卡支付 · 历史卡保存与一键复购 PRD</a>
+        <span class="tag">PRD v1.7</span>
+      </li>
+      <li>
+        <a href="Adyen-checkout-UI交互图.html">Checkout 结算页 UI 交互原型</a>
+        <span class="tag">可交互</span>
+      </li>
+    </ul>
+  </div>
+
+  <h2>美国站 · 发票</h2>
+  <div class="card">
+    <ul>
+      <li>
+        <a href="us-govee-部分退款发票更新-PRD.html">us.govee.com 部分退款发票更新 PRD</a>
+        <span class="tag">PRD</span>
+      </li>
+    </ul>
+  </div>
 </body>
 </html>

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adyen Checkout · UI 交互原型</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #eef1f5;
+      --phone-bg: #f7f8fa;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #8e8e93;
+      --label: #636366;
+      --border: #e5e5ea;
+      --blue: #0099ff;
+      --blue-dark: #007acc;
+      --red: #ff3b30;
+      --green: #34c759;
+      --input-bg: #f2f2f7;
+      --accent-bar: #1f4e79;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, -apple-system, "PingFang SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ---- doc shell ---- */
+    .layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .top-nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      font-size: 13px;
+      text-align: center;
+    }
+    .top-nav a {
+      color: var(--blue-dark);
+      text-decoration: none;
+      margin: 0 12px;
+    }
+    .top-nav a:hover { text-decoration: underline; }
+
+    .doc-panel h1 { font-size: 22px; margin-bottom: 6px; }
+    .doc-panel .sub { color: var(--label); font-size: 13px; margin-bottom: 20px; }
+
+    .state-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .state-tab {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: .15s;
+    }
+    .state-tab:hover { border-color: var(--blue); }
+    .state-tab.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+      font-weight: 600;
+    }
+
+    .spec-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .spec-box h3 { font-size: 14px; color: var(--accent-bar); margin-bottom: 10px; }
+    .spec-box ul { padding-left: 18px; font-size: 13px; color: #333; }
+    .spec-box li { margin-bottom: 6px; }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 6px;
+    }
+    .tag-new { background: #e8f4fd; color: #007acc; }
+    .tag-hide { background: #fce8e8; color: #c0392b; }
+
+    /* ---- phone mockup ---- */
+    .phone-wrap {
+      position: sticky;
+      top: 20px;
+    }
+    .phone-label {
+      text-align: center;
+      font-size: 12px;
+      color: var(--label);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .phone {
+      width: 375px;
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--phone-bg);
+      border-radius: 36px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.15), 0 0 0 10px #1a1a1a, 0 0 0 12px #333;
+      overflow: hidden;
+      min-height: 780px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* status bar */
+    .status-bar {
+      height: 44px;
+      background: var(--phone-bg);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 6px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* nav */
+    .nav {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px 12px;
+      background: var(--phone-bg);
+    }
+    .nav-back { font-size: 22px; color: var(--text); width: 32px; }
+    .nav-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 32px; }
+
+    /* scroll content */
+    .phone-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 0 100px;
+    }
+
+    /* price section */
+    .price-section { padding: 4px 20px 16px; }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 14px;
+      color: var(--label);
+    }
+    .price-row .val { color: var(--text); font-weight: 500; }
+    .price-row .val.red { color: var(--red); }
+    .price-row .val.free { color: var(--blue); font-weight: 600; }
+    .price-row .left { display: flex; align-items: center; gap: 8px; }
+    .coupon-tag {
+      background: #e8f4fd;
+      color: var(--blue);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .chevron { color: var(--muted); font-size: 12px; }
+    .help-icon {
+      width: 16px; height: 16px;
+      border: 1px solid var(--muted);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .divider { height: 8px; background: #ebebef; margin: 4px 0 12px; }
+
+    /* payment section */
+    .pay-title {
+      padding: 0 20px 12px;
+      font-size: 14px;
+      color: var(--label);
+    }
+
+    .pay-item {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+    }
+    .pay-item:last-child { border-bottom: 1px solid var(--border); }
+
+    .pay-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .pay-icon { font-size: 20px; width: 28px; text-align: center; }
+    .pay-name { flex: 1; font-size: 15px; font-weight: 500; }
+    .pay-check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid #c7c7cc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pay-check.on {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+      font-size: 12px;
+    }
+    .pay-radio {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid #c7c7cc;
+    }
+
+    /* credit card expanded */
+    .card-body {
+      padding: 0 20px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .card-body.hidden { display: none; }
+
+    /* saved cards */
+    .saved-list { margin-bottom: 12px; padding-top: 12px; }
+    .saved-list.hidden { display: none; }
+    .saved-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      background: #fafafa;
+    }
+    .saved-item.selected {
+      border-color: var(--blue);
+      background: #f0f8ff;
+    }
+    .saved-radio {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid #c7c7cc;
+      flex-shrink: 0;
+    }
+    .saved-item.selected .saved-radio {
+      border-color: var(--blue);
+      background: radial-gradient(circle, var(--blue) 40%, transparent 42%);
+    }
+    .card-brand-icon {
+      width: 36px; height: 24px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .brand-visa { background: #1a1f71; }
+    .brand-mc { background: #eb001b; }
+    .saved-info { flex: 1; }
+    .saved-num { font-size: 14px; font-weight: 500; }
+    .saved-exp { font-size: 12px; color: var(--label); }
+    .default-badge {
+      font-size: 10px;
+      background: #e8f4fd;
+      color: var(--blue);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .new-card-link {
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 4px 0 12px;
+      cursor: pointer;
+    }
+    .new-card-link.hidden { display: none; }
+
+    /* adyen form */
+    .adyen-form.hidden { display: none; }
+    .field-label { font-size: 13px; color: var(--label); margin-bottom: 6px; }
+    .field-input {
+      background: var(--input-bg);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .field-input .icon { opacity: .4; font-size: 18px; }
+    .card-logos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .card-logo {
+      width: 32px; height: 20px;
+      background: #ddd;
+      border-radius: 3px;
+      font-size: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-weight: 700;
+    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* save card - NEW */
+    .save-block {
+      margin-top: 4px;
+      padding-top: 12px;
+      border-top: 1px dashed #d1d1d6;
+    }
+    .save-block.hidden { display: none; }
+    .save-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .save-checkbox {
+      width: 20px; height: 20px;
+      border: 2px solid #c7c7cc;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #fff;
+    }
+    .save-checkbox.checked {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+    .save-label { font-size: 14px; font-weight: 500; line-height: 1.4; }
+    .save-hint {
+      font-size: 11px;
+      color: var(--label);
+      margin-top: 8px;
+      line-height: 1.5;
+      padding-left: 30px;
+    }
+    .save-hint a { color: var(--blue); text-decoration: none; }
+
+    .anno-new {
+      position: relative;
+      outline: 2px dashed var(--blue);
+      outline-offset: 4px;
+      border-radius: 8px;
+    }
+    .anno-label {
+      position: absolute;
+      top: -10px;
+      right: 0;
+      background: var(--blue);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: .3px;
+    }
+
+    /* error toast */
+    .error-toast {
+      margin: 0 20px 12px;
+      background: #fff0f0;
+      border: 1px solid #ffcaca;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #c0392b;
+      display: none;
+    }
+    .error-toast.show { display: block; }
+
+    /* bottom bar */
+    .bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 12px 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .phone-inner { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 736px; }
+    .total-block { flex: 1; }
+    .total-label { font-size: 13px; color: var(--label); }
+    .total-val { font-size: 22px; font-weight: 700; color: var(--blue); }
+    .reward { font-size: 12px; color: var(--label); margin-top: 2px; }
+    .reward .coin { color: #f5a623; }
+    .pay-btn {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .pay-btn:active { background: var(--blue-dark); }
+
+    /* 3ds overlay */
+    .overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 10;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .overlay.show { display: flex; }
+    .overlay-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 300px;
+      text-align: center;
+    }
+    .overlay-card h4 { font-size: 16px; margin-bottom: 8px; }
+    .overlay-card p { font-size: 13px; color: var(--label); margin-bottom: 16px; }
+    .overlay-btn {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .login-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .login-badge.guest { background: #fff3cd; color: #856404; }
+    .login-badge.user { background: #d4edda; color: #155724; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">← 文档首页</a>
+    <a href="Adyen-NTO卡支付一键复购-PRD.html">PRD 全文</a>
+  </nav>
+  <div class="layout">
+    <!-- left: controls + spec -->
+    <div class="doc-panel">
+      <h1>Adyen Checkout · UI 交互原型</h1>
+      <p class="sub">基于结算页截图 · 存卡 / 一键支付改造 · 点击状态切换右侧预览</p>
+
+      <div class="state-tabs" id="stateTabs">
+        <button class="state-tab active" data-state="s0">S0 未登录·新卡</button>
+        <button class="state-tab" data-state="s1">S1 已登录·首购新卡</button>
+        <button class="state-tab" data-state="s2">S2 已登录·已存卡</button>
+        <button class="state-tab" data-state="s3">S3 已登录·展开新卡</button>
+        <button class="state-tab" data-state="s4">S4 3DS 验证</button>
+        <button class="state-tab" data-state="s5">S5 支付失败</button>
+      </div>
+
+      <div class="spec-box" id="specBox">
+        <h3 id="specTitle">S0 · 未登录 · 新卡支付</h3>
+        <ul id="specList">
+          <li><span class="tag tag-hide">隐藏</span>已存卡列表、存卡勾选、隐私说明</li>
+          <li>仅展示 Adyen 卡表单（与现网截图一致）</li>
+          <li>Pay Now → 普通 Ecommerce Session，<strong>不创建 token</strong></li>
+        </ul>
+      </div>
+
+      <div class="spec-box">
+        <h3>新增模块标注（相对现网截图）</h3>
+        <ul>
+          <li><span class="tag tag-new">NEW</span>已存卡单选列表（S2/S3）</li>
+          <li><span class="tag tag-new">NEW</span>Save this card 勾选框 — <strong>默认不勾选</strong></li>
+          <li><span class="tag tag-new">NEW</span>隐私说明 + Learn more 链接</li>
+          <li><span class="tag tag-new">NEW</span>Pay with a new card 文字链</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- right: phone -->
+    <div class="phone-wrap">
+      <div class="phone-label" id="phoneLabel">S0 · 未登录 · 新卡</div>
+      <div class="phone">
+        <div class="phone-inner">
+          <div class="status-bar">9:41</div>
+          <div class="nav">
+            <div class="nav-back">‹</div>
+            <div class="nav-title">Check Out</div>
+          </div>
+
+          <div class="phone-scroll">
+            <!-- login badge -->
+            <div style="padding: 0 20px 4px;">
+              <span class="login-badge guest" id="loginBadge">Guest · Not logged in</span>
+            </div>
+
+            <!-- error -->
+            <div class="error-toast" id="errorToast">
+              Payment failed. Please try again or use another payment method.
+            </div>
+
+            <!-- price -->
+            <div class="price-section">
+              <div class="price-row"><span>Original Price</span><span class="val">$499.99</span></div>
+              <div class="price-row"><span>Selling Price</span><span class="val">$249.50</span></div>
+              <div class="price-row">
+                <span class="left">Coupon <span class="coupon-tag">1 coupons picked</span></span>
+                <span class="val red">-$5.00 <span class="chevron">›</span></span>
+              </div>
+              <div class="price-row">
+                <span class="left">Deducted Amount <span class="help-icon">?</span></span>
+                <span class="val red">-$0.00 <span class="chevron">›</span></span>
+              </div>
+              <div class="price-row"><span>Shipping Fee</span><span class="val free">FREE</span></div>
+              <div class="price-row"><span>Tax</span><span class="val">$17.73</span></div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="pay-title">Select the payment method</div>
+
+            <!-- Credit Card -->
+            <div class="pay-item">
+              <div class="pay-header">
+                <div class="pay-icon">💳</div>
+                <div class="pay-name">Credit Card</div>
+                <div class="pay-check on">✓</div>
+              </div>
+              <div class="card-body" id="cardBody">
+                <!-- saved cards -->
+                <div class="saved-list hidden" id="savedList">
+                  <div class="saved-item selected" id="saved1" onclick="selectSaved(1)">
+                    <div class="saved-radio"></div>
+                    <div class="card-brand-icon brand-visa">VISA</div>
+                    <div class="saved-info">
+                      <div class="saved-num">Visa ···· 4242</div>
+                      <div class="saved-exp">Exp 03/28</div>
+                    </div>
+                    <span class="default-badge">Default</span>
+                  </div>
+                  <div class="saved-item" id="saved2" onclick="selectSaved(2)">
+                    <div class="saved-radio"></div>
+                    <div class="card-brand-icon brand-mc">MC</div>
+                    <div class="saved-info">
+                      <div class="saved-num">Mastercard ···· 8888</div>
+                      <div class="saved-exp">Exp 11/27</div>
+                    </div>
+                  </div>
+                  <div class="new-card-link hidden" id="newCardLink" onclick="goState('s3')">Pay with a new card</div>
+                </div>
+
+                <!-- adyen form -->
+                <div class="adyen-form" id="adyenForm">
+                  <div class="field-label">Card number</div>
+                  <div class="field-input">1234 5678 9012 3456 <span class="icon">💳</span></div>
+                  <div class="card-logos">
+                    <div class="card-logo">VISA</div>
+                    <div class="card-logo">CB</div>
+                    <div class="card-logo">MC</div>
+                    <div class="card-logo">AMEX</div>
+                    <div class="card-logo">DISC</div>
+                    <div class="card-logo">DC</div>
+                    <div class="card-logo">UP</div>
+                    <div class="card-logo">ELO</div>
+                    <div class="card-logo">JCB</div>
+                  </div>
+                  <div class="field-row">
+                    <div>
+                      <div class="field-label">Expiry date</div>
+                      <div class="field-input">MM/YY <span class="icon">📅</span></div>
+                    </div>
+                    <div>
+                      <div class="field-label">Security code</div>
+                      <div class="field-input">3 digits <span class="icon">🔒</span></div>
+                    </div>
+                  </div>
+
+                  <!-- NEW: save card -->
+                  <div class="save-block hidden anno-new" id="saveBlock">
+                    <span class="anno-label">NEW</span>
+                    <div class="save-row" onclick="toggleSave()">
+                      <div class="save-checkbox" id="saveCheckbox"></div>
+                      <div class="save-label">Save this card for faster checkout next time</div>
+                    </div>
+                    <div class="save-hint">
+                      Your full card number and CVV are not stored by us. Payment details are securely stored by Adyen.
+                      <a href="#">Learn more</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- other methods -->
+            <div class="pay-item">
+              <div class="pay-header">
+                <div class="pay-icon"><span style="color:#003087;font-weight:700;font-size:14px;">P</span></div>
+                <div class="pay-name">PayPal</div>
+                <div class="pay-radio"></div>
+              </div>
+            </div>
+            <div class="pay-item">
+              <div class="pay-header">
+                <div class="pay-icon"><span style="background:#ffb3c7;color:#000;font-size:9px;padding:2px 4px;border-radius:3px;font-weight:700;">K</span></div>
+                <div class="pay-name">KlarnaPay</div>
+                <span class="chevron">⌄</span>
+              </div>
+            </div>
+            <div class="pay-item">
+              <div class="pay-header">
+                <div class="pay-icon"><span style="background:#b2fce4;color:#000;font-size:8px;padding:2px 5px;border-radius:10px;font-weight:700;">$</span></div>
+                <div class="pay-name">AfterPay</div>
+                <div class="pay-radio"></div>
+              </div>
+            </div>
+            <div class="pay-item">
+              <div class="pay-header">
+                <div class="pay-icon"><span style="font-size:14px;">G</span></div>
+                <div class="pay-name">Google Pay</div>
+                <div class="pay-radio"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- bottom -->
+          <div class="bottom-bar">
+            <div class="total-block">
+              <div class="total-label">Total</div>
+              <div class="total-val">$262.23</div>
+              <div class="reward">Reward <span class="coin">🪙</span> 106</div>
+            </div>
+            <button class="pay-btn" onclick="handlePayNow()">Pay Now</button>
+          </div>
+
+          <!-- 3ds overlay -->
+          <div class="overlay" id="overlay3ds">
+            <div class="overlay-card">
+              <h4>3D Secure Verification</h4>
+              <p>Your bank requires additional verification to complete this payment.</p>
+              <button class="overlay-btn" onclick="close3ds()">Simulate Success</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SPECS = {
+      s0: {
+        label: 'S0 · 未登录 · 新卡',
+        badge: ['guest', 'Guest · Not logged in'],
+        saved: false, form: true, save: false, newLink: false, error: false, overlay: false,
+        saveChecked: false,
+        title: 'S0 · 未登录 · 新卡支付',
+        bullets: [
+          '<span class="tag tag-hide">隐藏</span>已存卡列表、存卡勾选、隐私说明',
+          '仅展示 Adyen 卡表单（与现网截图一致）',
+          'Pay Now → 普通 Ecommerce Session，<strong>不创建 token</strong>'
+        ]
+      },
+      s1: {
+        label: 'S1 · 已登录 · 首购新卡',
+        badge: ['user', 'Logged in · No saved cards'],
+        saved: false, form: true, save: true, newLink: false, error: false, overlay: false,
+        saveChecked: false,
+        title: 'S1 · 已登录 · 首购 · 新卡 + 存卡勾选',
+        bullets: [
+          '<span class="tag tag-new">NEW</span>存卡勾选框 — <strong>默认 ☐ 不勾选</strong>',
+          '<span class="tag tag-new">NEW</span>隐私说明 + Learn more',
+          'Pay Now + 勾选 → Ecommerce + askForConsent → 创建 token',
+          'Pay Now + 未勾选 → 支付成功但不存卡'
+        ]
+      },
+      s2: {
+        label: 'S2 · 已登录 · 已存卡（一键）',
+        badge: ['user', 'Logged in · 2 saved cards'],
+        saved: true, form: false, save: false, newLink: true, error: false, overlay: false,
+        saveChecked: false,
+        title: 'S2 · 已登录 · 复购 · 已存卡一键支付',
+        bullets: [
+          '<span class="tag tag-new">NEW</span>已存卡列表，默认选中 Default 卡',
+          '<span class="tag tag-hide">隐藏</span>新卡表单（无需输入卡号）',
+          'Pay Now → ContAuth Session + storedPaymentMethodId',
+          '点击 Pay with a new card → 切换 S3'
+        ]
+      },
+      s3: {
+        label: 'S3 · 已登录 · 展开新卡',
+        badge: ['user', 'Logged in · Adding new card'],
+        saved: true, form: true, save: true, newLink: true, error: false, overlay: false,
+        saveChecked: false,
+        title: 'S3 · 已登录 · 使用新卡 + 存卡勾选',
+        bullets: [
+          '已存卡列表 + 展开新卡表单',
+          '存卡勾选默认不勾选',
+          'Pay Now → Ecommerce Session；按勾选决定是否存卡'
+        ]
+      },
+      s4: {
+        label: 'S4 · 3DS 验证',
+        badge: ['user', 'Logged in · 3DS challenge'],
+        saved: true, form: false, save: false, newLink: true, error: false, overlay: true,
+        saveChecked: false,
+        title: 'S4 · 3DS 强客户认证',
+        bullets: [
+          'Pay Now 后发卡行要求 SCA 时展示',
+          '首购存卡 / 部分复购均可能触发',
+          '验证通过后回到订单成功页'
+        ]
+      },
+      s5: {
+        label: 'S5 · 支付失败',
+        badge: ['user', 'Logged in · Payment failed'],
+        saved: true, form: false, save: false, newLink: true, error: true, overlay: false,
+        saveChecked: false,
+        title: 'S5 · 支付失败',
+        bullets: [
+          '顶部 Inline 错误提示',
+          '保留当前选中支付方式',
+          '用户可换已存卡 / 新卡 / 其他支付方式'
+        ]
+      }
+    };
+
+    let currentState = 's0';
+
+    function goState(state) {
+      currentState = state;
+      document.querySelectorAll('.state-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.state === state);
+      });
+      applyState(SPECS[state]);
+    }
+
+    function applyState(cfg) {
+      document.getElementById('phoneLabel').textContent = cfg.label;
+      document.getElementById('specTitle').textContent = cfg.title;
+      document.getElementById('specList').innerHTML = cfg.bullets.map(b => `<li>${b}</li>`).join('');
+
+      const badge = document.getElementById('loginBadge');
+      badge.className = 'login-badge ' + cfg.badge[0];
+      badge.textContent = cfg.badge[1];
+
+      document.getElementById('savedList').classList.toggle('hidden', !cfg.saved);
+      document.getElementById('adyenForm').classList.toggle('hidden', !cfg.form);
+      document.getElementById('saveBlock').classList.toggle('hidden', !cfg.save);
+      document.getElementById('newCardLink').classList.toggle('hidden', !cfg.newLink);
+      document.getElementById('errorToast').classList.toggle('show', cfg.error);
+      document.getElementById('overlay3ds').classList.toggle('show', cfg.overlay);
+
+      const cb = document.getElementById('saveCheckbox');
+      cb.classList.toggle('checked', cfg.saveChecked);
+      cb.textContent = cfg.saveChecked ? '✓' : '';
+    }
+
+    function toggleSave() {
+      const cb = document.getElementById('saveCheckbox');
+      const checked = !cb.classList.contains('checked');
+      cb.classList.toggle('checked', checked);
+      cb.textContent = checked ? '✓' : '';
+    }
+
+    function selectSaved(n) {
+      document.getElementById('saved1').classList.toggle('selected', n === 1);
+      document.getElementById('saved2').classList.toggle('selected', n === 2);
+    }
+
+    function handlePayNow() {
+      if (currentState === 's1' || currentState === 's3') goState('s4');
+      else if (currentState === 's2') goState('s4');
+      else goState('s4');
+    }
+
+    function close3ds() {
+      goState(currentState === 's0' ? 's0' : 's2');
+      document.getElementById('overlay3ds').classList.remove('show');
+    }
+
+    document.getElementById('stateTabs').addEventListener('click', e => {
+      const tab = e.target.closest('.state-tab');
+      if (tab) goState(tab.dataset.state);
+    });
+
+    applyState(SPECS.s0);
+  </script>
+</body>
+</html>
