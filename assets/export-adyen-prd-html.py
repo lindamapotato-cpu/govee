@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Generate HTML exports from the Adyen NTO checkout PRD markdown."""
+"""Generate static HTML exports from the Adyen NTO checkout PRD markdown."""
 
 from __future__ import annotations
 
 import html
-import json
+import re
 from pathlib import Path
+
+import markdown
 
 ROOT = Path(__file__).resolve().parent.parent
 MD_FILE = ROOT / "Adyen-NTO卡支付一键复购-PRD.md"
@@ -17,7 +19,6 @@ PRD_PAGE_TEMPLATE = """<!DOCTYPE html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Adyen 卡支付 · 历史卡保存与一键复购 PRD</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
@@ -94,28 +95,15 @@ PRD_PAGE_TEMPLATE = """<!DOCTYPE html>
     <a href="Adyen-checkout-UI交互图.html">Checkout 交互原型</a>
   </nav>
   <main class="container">
-    <article id="content" class="markdown-body"></article>
+    <article id="content" class="markdown-body">
+__CONTENT_HTML__
+    </article>
     <p class="footer">Generated from <a href="__MD_LINK__">Adyen-NTO卡支付一键复购-PRD.md</a></p>
   </main>
   <script>
-    const rawMd = __MD_ESCAPED__;
     mermaid.initialize({ startOnLoad: false, theme: "default", securityLevel: "loose" });
-
-    const renderer = new marked.Renderer();
-    renderer.code = function(code, infostring) {
-      const lang = (infostring || "").trim().toLowerCase();
-      if (lang === "mermaid") {
-        return '<div class="mermaid">' + code + "</div>";
-      }
-      const escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      return "<pre><code>" + escaped + "</code></pre>";
-    };
-
-    marked.setOptions({ renderer: renderer, gfm: true, breaks: false });
-    document.getElementById("content").innerHTML = marked.parse(rawMd);
-
     document.querySelectorAll(".mermaid").forEach(function(el, i) {
-      const src = el.textContent;
+      const src = el.textContent.trim();
       const id = "mermaid-" + i;
       mermaid.render(id, src).then(function(result) {
         el.innerHTML = result.svg;
@@ -128,6 +116,8 @@ PRD_PAGE_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
+MERMAID_BLOCK = re.compile(r"```mermaid\n(.*?)\n```", re.DOTALL)
+
 
 def read_markdown() -> str:
     if not MD_FILE.is_file():
@@ -135,10 +125,31 @@ def read_markdown() -> str:
     return MD_FILE.read_text(encoding="utf-8")
 
 
+def preprocess_mermaid(md_text: str) -> str:
+    def repl(match: re.Match[str]) -> str:
+        body = match.group(1).strip()
+        return f'<div class="mermaid">\n{body}\n</div>\n'
+
+    return MERMAID_BLOCK.sub(repl, md_text)
+
+
+def markdown_to_html(md_text: str) -> str:
+    processed = preprocess_mermaid(md_text)
+    return markdown.markdown(
+        processed,
+        extensions=["extra", "tables", "fenced_code", "sane_lists"],
+        output_format="html5",
+    )
+
+
 def build_prd_html(md_text: str) -> str:
-    escaped = json.dumps(md_text, ensure_ascii=False)
+    content_html = markdown_to_html(md_text)
     md_link = html.escape(MD_FILE.name)
-    return PRD_PAGE_TEMPLATE.replace("__MD_ESCAPED__", escaped).replace("__MD_LINK__", md_link)
+    return (
+        PRD_PAGE_TEMPLATE.replace("__CONTENT_HTML__", content_html).replace(
+            "__MD_LINK__", md_link
+        )
+    )
 
 
 def write_outputs() -> None:
